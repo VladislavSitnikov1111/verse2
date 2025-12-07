@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Вірш у диму — демонстрація</title>
+  <style>
+    :root{
+      --bg:#000;
+      --text:#ffffff;
+      --font:'Georgia',serif;
+    }
+    html,body{height:100%;margin:0}
+    body{
+      background:var(--bg) center/cover no-repeat fixed;
+      font-family:var(--font);
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;color:var(--text);
+    }
+
+    .stage{
+      position:relative;
+      width:100%;max-width:1000px;padding:40px;box-sizing:border-box;
+      display:flex;align-items:center;justify-content:center;
+      text-align:center;z-index:3;
+      pointer-events:none;
+    }
+
+    .poem{
+      font-size: clamp(13px, 3vw, 20px);
+      line-height:1.45;
+      color:var(--text);
+      opacity:0;
+      transform:translateY(20px) scale(0.97);
+      transition:opacity 2.2s ease, transform 2.4s ease;
+      padding:0 20px;
+      text-shadow: 0 8px 28px rgba(0,0,0,0.65);
+      mix-blend-mode:screen;
+      white-space:pre-line;
+    }
+
+    /* Декоративні шари диму */
+    .smoke-layer{
+      position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+    }
+    .smoke{
+      position:absolute;left:50%;top:60%;width:160vmax;height:160vmax;
+      transform:translate(-50%,-50%);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 8%, transparent 25%),
+                  radial-gradient(circle at 70% 70%, rgba(255,255,255,0.09), rgba(255,255,255,0.02) 6%, transparent 20%);
+      filter: blur(40px) contrast(80%);
+      opacity:0.95;
+      animation: drift 10s linear infinite, fadeCycle 6s ease-in-out forwards;
+      will-change:transform,opacity;
+      mix-blend-mode:screen;
+    }
+
+    .smoke.smoke-2{ top:70%; left:45%; width:140vmax; animation-duration:14s; opacity:0.7; filter: blur(60px) }
+    .smoke.smoke-3{ top:50%; left:55%; width:120vmax; animation-duration:9s; opacity:0.6; filter: blur(80px) }
+
+    @keyframes drift{
+      0% { transform: translate(-50%,-48%) rotate(0deg) scale(1); }
+      50% { transform: translate(-55%,-60%) rotate(6deg) scale(1.04); }
+      100% { transform: translate(-50%,-48%) rotate(0deg) scale(1); }
+    }
+
+    body.revealed .poem{ opacity:1; transform:translateY(0) scale(1); }
+    body.revealed .smoke{ animation-name:drift, smokeOut; animation-fill-mode:forwards }
+
+    @keyframes smokeOut{
+      0% { opacity:1; filter: blur(40px); transform:translateY(0) scale(1); }
+      70% { opacity:0.85; }
+      100% { opacity:0; transform:translateY(-18vh) scale(1.08); filter: blur(120px); }
+    }
+
+    @media (max-width:600px){ .poem{ background: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.1)); padding:18px;border-radius:8px } }
+
+
+    .controls{ position:fixed; right:14px; bottom:14px; z-index:5; }
+    .btn{ background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); color:var(--text); padding:8px 12px; border-radius:8px; backdrop-filter:blur(6px); cursor:pointer }
+    .btn:hover{ transform:translateY(-2px) }
+  </style>
+</head>
+<body>
+
+  <div class="smoke-layer" aria-hidden="true">
+    <div class="smoke smoke-1"></div>
+    <div class="smoke smoke-2"></div>
+    <div class="smoke smoke-3"></div>
+  </div>
+
+  <main class="stage">
+    <div class="poem" id="poem">
+      Їхав довгожданою дорогою,
+      Заглянув погрітися в хутірок.
+      Зустріла хазяйка молода,
+      Як зустрічає рідного сім’я.
+
+      У світлицю ласкаво запросила
+      І лагідно дивилась на мене.
+      Рано-вранці, до світаня,
+      Вийшов коня я осідлать.
+
+      Бачу — зажурилась хуторянка
+      І не хоче навіть щось сказать.
+      Так і не доїхав я додому —
+      Слід мій загубився в комиші.
+
+      Що ж робити парубку молодому,
+      Коли дівчина припала до душі?
+    </div>
+  </main>
+
+  <script>
+    function reveal(){
+      requestAnimationFrame(()=>{
+        setTimeout(()=> document.body.classList.add('revealed'), 300);
+      })
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') reveal();
+    else window.addEventListener('DOMContentLoaded', reveal);
+
+    document.getElementById('replay').addEventListener('click', ()=>{
+      document.body.classList.remove('revealed');
+      setTimeout(()=> document.body.classList.add('revealed'), 60);
+    });
+  </script>
+</body>
+</html>
